@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stylish Drawing App</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #141e30, #243b55);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.tool {
+    color: white;
+    font-size: 15px;
+}
+
+input[type="color"] {
+    width: 55px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+input[type="range"] {
+    cursor: pointer;
+}
+
+button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.clear-btn {
+    background: #ff4d6d;
+    color: white;
+}
+
+.clear-btn:hover {
+    background: #ff1e4d;
+    transform: scale(1.05);
+}
+
+canvas {
+    display: block;
+    margin: auto;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    cursor: crosshair;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎨 Stylish Drawing Board</h1>
+
+    <div class="toolbar">
+        <div class="tool">
+            Color:
+            <input type="color" id="colorPicker" value="#00f5ff">
+        </div>
+
+        <div class="tool">
+            Brush Size:
+            <input type="range" id="brushSize" min="1" max="25" value="5">
+        </div>
+
+        <button class="clear-btn" id="clearCanvas">Clear Canvas</button>
+    </div>
+
+    <canvas id="canvas" width="1000" height="550"></canvas>
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const colorPicker = document.getElementById("colorPicker");
+const brushSize = document.getElementById("brushSize");
+const clearCanvas = document.getElementById("clearCanvas");
+
+let drawing = false;
+
+canvas.addEventListener("mousedown", () => drawing = true);
+canvas.addEventListener("mouseup", () => {
+    drawing = false;
+    ctx.beginPath();
+});
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mouseleave", () => drawing = false);
+
+function draw(e) {
+    if (!drawing) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineWidth = brushSize.value;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = colorPicker.value;
+
+    // Glow effect
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = colorPicker.value;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+clearCanvas.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+</script>
+
+</body>
+</html>
